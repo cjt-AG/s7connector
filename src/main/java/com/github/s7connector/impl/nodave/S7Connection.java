@@ -123,7 +123,7 @@ public abstract class S7Connection {
 						pos++;
 					}
 				} else {
-					LOGGER.error("Error {}", r.error);
+					LOGGER.error("Error", r.error);
 				}
 				pos += 4;
 				rs.results[i] = r;
@@ -295,7 +295,7 @@ public abstract class S7Connection {
 		try {
 			this.semaphore.acquire();
 		} catch (final InterruptedException e) {
-			LOGGER.error("Interrupted {}", e);
+			LOGGER.error("Interrupted", e);
 		}
 		final PDU p1 = new PDU(this.msgOut, this.PDUstartOut);
 		p1.initReadRequest();

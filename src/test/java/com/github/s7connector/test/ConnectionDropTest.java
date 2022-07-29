@@ -39,7 +39,7 @@ public class ConnectionDropTest {
 			try {
 				Socket socket = serverSocket.accept();
 			} catch (IOException e) {
-				LOGGER.error("Interrupted {}", e);
+				LOGGER.error("Interrupted", e);
 			}
 		});
 
