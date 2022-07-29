@@ -104,7 +104,7 @@ public final class S7TCPConnection extends S7BaseConnection {
 		try {
 			this.socket.close();
 		} catch (final Exception e) {
-			LOGGER.error("Interrupted: ", e);
+			LOGGER.error("Interrupted", e);
 		}
 	}
 
