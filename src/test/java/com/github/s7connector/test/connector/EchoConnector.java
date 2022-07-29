@@ -17,49 +17,51 @@ package com.github.s7connector.test.connector;
 
 import java.io.IOException;
 
-import com.github.s7connector.api.DaveArea;
-import com.github.s7connector.api.S7Connector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.s7connector.api.DaveArea;
+import com.github.s7connector.api.S7Connector;
 
 /**
  * Echo connector for testing
  * 
- * returns the same buffer in read() as given in write() regardless of the byte-range or area
+ * returns the same buffer in read() as given in write() regardless of the
+ * byte-range or area
  * 
  * @author Thomas Rudin
  *
  */
 public class EchoConnector implements S7Connector {
 
-	private static final Logger logger = LoggerFactory.getLogger(EchoConnector.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(EchoConnector.class);
 
 	@Override
 	public byte[] read(DaveArea area, int areaNumber, int bytes, int offset) {
-		logger.debug("Reading area={} areaNumber={}, bytes={} offset={}",
-				area, areaNumber, bytes, offset);
+		LOGGER.debug("Reading area={} areaNumber={}, bytes={} offset={}", area, areaNumber, bytes, offset);
 		return buffer;
 	}
 
 	public byte[] buffer;
 
-
 	@Override
 	public void write(DaveArea area, int areaNumber, int offset, byte[] buffer) {
-		logger.debug("Writing area={} areaNumber={}, offset={} buffer.length={}",
-				area, areaNumber, offset, buffer.length);
+		LOGGER.debug("Writing area={} areaNumber={}, offset={} buffer.length={}", area, areaNumber, offset,
+				buffer.length);
 
 		this.buffer = buffer;
-
-		System.out.println("Size: " + buffer.length);
-
-		for (int i = 0; i < buffer.length; i++)
-			System.out.print(Integer.toHexString(buffer[i] & 0xFF) + ",");
-
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Size: {}", buffer.length);
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = 0; i < buffer.length; i++) {
+				stringBuilder.append(Integer.toHexString(buffer[i] & 0xFF) + ",");
+			}
+			LOGGER.debug(stringBuilder.toString());
+		}
 	}
 
-
 	@Override
-	public void close() throws IOException {}
+	public void close() throws IOException {
+	}
 
 }

@@ -19,9 +19,13 @@
 */
 package com.github.s7connector.impl.nodave;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.s7connector.api.DaveArea;
 
 public final class PDU {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PDU.class);
 	/**
 	 * known function codes
 	 */
@@ -130,8 +134,8 @@ public final class PDU {
 	}
 
 	/**
-	 * Add len bytes of len after parameters from a maybe longer block of bytes.
-	 * Set dlen as needed. Needs valid header and parameters
+	 * Add len bytes of len after parameters from a maybe longer block of bytes. Set
+	 * dlen as needed. Needs valid header and parameters
 	 */
 	public void addData(final byte[] newData, final int len) {
 		final int appPos = this.data + this.dlen; // append to this position
@@ -184,8 +188,7 @@ public final class PDU {
 	}
 
 	public int addVarToReadRequest(final DaveArea area, final int DBnum, int start, final int len) {
-		final byte[] pa = { 0x12, 0x0a, 0x10,
-				0x02, /* 1=single bit, 2=byte, 4=word */
+		final byte[] pa = { 0x12, 0x0a, 0x10, 0x02, /* 1=single bit, 2=byte, 4=word */
 				0x00, 0x1A, /* length in bytes */
 				0x00, 0x0B, /* DB number */
 				(byte) 0x84, // * area code */
@@ -212,8 +215,8 @@ public final class PDU {
 		this.plen += pa.length;
 		Nodave.setUSBEWord(this.mem, this.header + 6, this.plen);
 		/**
-		 * TODO calc length of result. Do not add variable if it would exceed
-		 * max. result length.
+		 * TODO calc length of result. Do not add variable if it would exceed max.
+		 * result length.
 		 */
 		return 0;
 	}
@@ -269,23 +272,24 @@ public final class PDU {
 	 * construct a write request for a single item in PLC memory.
 	 */
 	/*
-	 * void constructWriteRequest( int area, int DBnum, int start, int len,
-	 * byte[] buffer) { byte pa[] = new byte[14]; byte da[] = { 0, 4, 0, 0 };
-	 * pa[0] = PDU.FUNC_WRITE; pa[1] = (byte) 0x01; pa[2] = (byte) 0x12; pa[3] =
-	 * (byte) 0x0a; pa[4] = (byte) 0x10; pa[5] = (byte) 0x02;
+	 * void constructWriteRequest( int area, int DBnum, int start, int len, byte[]
+	 * buffer) { byte pa[] = new byte[14]; byte da[] = { 0, 4, 0, 0 }; pa[0] =
+	 * PDU.FUNC_WRITE; pa[1] = (byte) 0x01; pa[2] = (byte) 0x12; pa[3] = (byte)
+	 * 0x0a; pa[4] = (byte) 0x10; pa[5] = (byte) 0x02;
 	 *
 	 * Nodave.setUSBEWord(pa, 6, len); Nodave.setUSBEWord(pa, 8, DBnum);
 	 * Nodave.setUSBELong(pa, 10, 8 * start); // the bit address
 	 * Nodave.setUSByte(pa, 10, area); initHeader(1); addParam(pa); addData(da);
-	 * addValue(buffer); if ((Nodave.Debug & Nodave.DEBUG_PDU) != 0) { dump(); }
-	 * }
+	 * addValue(buffer); if ((Nodave.Debug & Nodave.DEBUG_PDU) != 0) { dump(); } }
 	 */
 	/**
 	 * display information about a PDU
 	 */
 	public void dump() {
 		Nodave.dump("PDU header ", this.mem, this.header, this.hlen);
-		System.out.println("plen: " + this.plen + " dlen: " + this.dlen);
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("plen: {} dlen: {}", this.plen, this.dlen);
+		}
 		Nodave.dump("Parameter", this.mem, this.param, this.plen);
 		if (this.dlen > 0) {
 			Nodave.dump("Data     ", this.mem, this.data, this.dlen);
@@ -309,10 +313,10 @@ public final class PDU {
 	/*
 	 * typedef struct { uc P; // allways 0x32 uc type; // a type? type 2 and 3
 	 * headers are two bytes longer. uc a,b; // currently unknown us number; //
-	 * Number, can be used to identify answers corresponding to requests us
-	 * plen; // length of parameters which follow this header us dlen; // length
-	 * of data which follows the parameters uc x[2]; // only present in type 2
-	 * and 3 headers. This may contain error information. } PDUHeader;
+	 * Number, can be used to identify answers corresponding to requests us plen; //
+	 * length of parameters which follow this header us dlen; // length of data
+	 * which follows the parameters uc x[2]; // only present in type 2 and 3
+	 * headers. This may contain error information. } PDUHeader;
 	 */
 	/**
 	 * return the number of the PDU
@@ -381,8 +385,8 @@ public final class PDU {
 	}
 
 	/**
-	 * Setup a PDU instance to reflect the structure of data present in the
-	 * memory area given to initHeader. Needs valid header.
+	 * Setup a PDU instance to reflect the structure of data present in the memory
+	 * area given to initHeader. Needs valid header.
 	 */
 
 	public int setupReceivedPDU() {

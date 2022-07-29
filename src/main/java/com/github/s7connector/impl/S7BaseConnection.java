@@ -15,6 +15,9 @@ limitations under the License.
 */
 package com.github.s7connector.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.s7connector.api.DaveArea;
 import com.github.s7connector.api.S7Connector;
 import com.github.s7connector.impl.nodave.Nodave;
@@ -27,7 +30,7 @@ import com.github.s7connector.impl.nodave.S7Connection;
  * @author Thomas Rudin
  */
 public abstract class S7BaseConnection implements S7Connector {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(S7BaseConnection.class);
 	/** The Constant MAX_SIZE. */
 	private static final int MAX_SIZE = 96;
 
@@ -46,8 +49,7 @@ public abstract class S7BaseConnection implements S7Connector {
 	/**
 	 * Checks the Result.
 	 *
-	 * @param libnodaveResult
-	 *            the libnodave result
+	 * @param libnodaveResult the libnodave result
 	 */
 	public static void checkResult(final int libnodaveResult) {
 		if (libnodaveResult != Nodave.RESULT_OK) {
@@ -59,12 +61,15 @@ public abstract class S7BaseConnection implements S7Connector {
 	/**
 	 * Dump data
 	 *
-	 * @param b
-	 *            the byte stream
+	 * @param b the byte stream
 	 */
 	protected static void dump(final byte[] b) {
-		for (final byte element : b) {
-			System.out.print(Integer.toHexString(element & 0xFF) + ",");
+		if (LOGGER.isDebugEnabled()) {
+			StringBuilder stringBuilder = new StringBuilder();
+			for (final byte element : b) {
+				stringBuilder.append(Integer.toHexString(element & 0xFF) + ",");
+			}
+			LOGGER.debug(stringBuilder.toString());
 		}
 	}
 
@@ -74,8 +79,7 @@ public abstract class S7BaseConnection implements S7Connector {
 	/**
 	 * Initialize the connection
 	 *
-	 * @param dc
-	 *            the connection instance
+	 * @param dc the connection instance
 	 */
 	protected void init(final S7Connection dc) {
 		this.dc = dc;
@@ -103,7 +107,6 @@ public abstract class S7BaseConnection implements S7Connector {
 		}
 	}
 
-
 	/** {@inheritDoc} */
 	@Override
 	public synchronized void write(final DaveArea area, final int areaNumber, final int offset, final byte[] buffer) {
@@ -124,6 +127,5 @@ public abstract class S7BaseConnection implements S7Connector {
 			checkResult(ret);
 		}
 	}
-
 
 }

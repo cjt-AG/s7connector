@@ -17,61 +17,63 @@ package com.github.s7connector.test.converter;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.s7connector.impl.serializer.converter.IntegerConverter;
 
-public class IntegerConverterTest
-{
+public class IntegerConverterTest {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(IntegerConverterTest.class);
+
 	@Test
-	public void insert1()
-	{
-		
+	public void insert1() {
+
 		IntegerConverter c = new IntegerConverter();
 		byte[] buffer = new byte[] { 0, 0, 0, 0 };
 		c.insert(666, buffer, 0, 0, 2);
-		for (int i=0; i<buffer.length; i++)
-			System.out.print( Integer.toHexString(buffer[i] & 0xFF) + ",");
-		
-		Assert.assertEquals( 0x02, (byte)buffer[0]);
-		Assert.assertEquals( (byte)0x9a, (byte)buffer[1]);
+		debug(buffer);
+		Assert.assertEquals(0x02, buffer[0]);
+		Assert.assertEquals((byte) 0x9a, buffer[1]);
 	}
 
 	@Test
-	public void insert2()
-	{
+	public void insert2() {
 		IntegerConverter c = new IntegerConverter();
 		byte[] buffer = new byte[] { 0, 0, 0, 0 };
 		c.insert(666, buffer, 1, 0, 2);
-		Assert.assertEquals( 0x00, (byte)buffer[0]);
-		Assert.assertEquals( 0x02, (byte)buffer[1]);
-		Assert.assertEquals( (byte)0x9a, (byte)buffer[2]);
-		Assert.assertEquals( 0x00, (byte)buffer[3]);
+		Assert.assertEquals(0x00, buffer[0]);
+		Assert.assertEquals(0x02, buffer[1]);
+		Assert.assertEquals((byte) 0x9a, buffer[2]);
+		Assert.assertEquals(0x00, buffer[3]);
 	}
 
 	@Test
-	public void extract1()
-	{
+	public void extract1() {
 		IntegerConverter c = new IntegerConverter();
-		byte[] buffer = new byte[]{ 0x02, (byte)0x9a, 0, 0 };
-
-		for (int i=0; i<buffer.length; i++)
-			System.out.print( Integer.toHexString(buffer[i] & 0xFF) + ",");
-
+		byte[] buffer = new byte[] { 0x02, (byte) 0x9a, 0, 0 };
+		debug(buffer);
 		int i = c.extract(Integer.class, buffer, 0, 0);
 		Assert.assertEquals(666, i);
 	}
-	
+
 	@Test
-	public void extract2()
-	{
+	public void extract2() {
 		IntegerConverter c = new IntegerConverter();
-		byte[] buffer = new byte[]{ 0, 0, 0x02, (byte)0x9a, 0, 0 };
-
-		for (int i=0; i<buffer.length; i++)
-			System.out.print( Integer.toHexString(buffer[i] & 0xFF) + ",");
-
+		byte[] buffer = new byte[] { 0, 0, 0x02, (byte) 0x9a, 0, 0 };
+		debug(buffer);
 		int i = c.extract(Integer.class, buffer, 2, 0);
 		Assert.assertEquals(666, i);
 	}
-	
+
+	private void debug(byte[] buffer) {
+		if (LOGGER.isDebugEnabled()) {
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = 0; i < buffer.length; i++) {
+				stringBuilder.append(Integer.toHexString(buffer[i] & 0xFF) + ",");
+			}
+			LOGGER.debug(stringBuilder.toString());
+		}
+	}
+
 }

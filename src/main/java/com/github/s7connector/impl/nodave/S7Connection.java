@@ -21,6 +21,9 @@ package com.github.s7connector.impl.nodave;
 
 import java.util.concurrent.Semaphore;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.s7connector.api.DaveArea;
 
 /**
@@ -30,6 +33,8 @@ import com.github.s7connector.api.DaveArea;
  * @author Thomas Hergenhahn
  */
 public abstract class S7Connection {
+	private static final Logger LOGGER = LoggerFactory.getLogger(S7Connection.class);
+
 	static int tmo_normal = 150;
 	int answLen; // length of last message
 	/**
@@ -70,10 +75,10 @@ public abstract class S7Connection {
 	 * class Result { int error; byte[] data; }
 	 */
 	/*
-	 * Read a predefined set of values from the PLC. Return ok or an error state
-	 * If a buffer pointer is provided, data will be copied into this buffer. If
-	 * it's NULL you can get your data from the resultPointer in daveConnection
-	 * long as you do not send further requests.
+	 * Read a predefined set of values from the PLC. Return ok or an error state If
+	 * a buffer pointer is provided, data will be copied into this buffer. If it's
+	 * NULL you can get your data from the resultPointer in daveConnection long as
+	 * you do not send further requests.
 	 */
 	public ResultSet execReadRequest(final PDU p) {
 		PDU p2;
@@ -89,7 +94,7 @@ public abstract class S7Connection {
 		final ResultSet rs = new ResultSet();
 		if (p2.mem[p2.param + 0] == PDU.FUNC_READ) {
 			int numResults = p2.mem[p2.param + 1];
-			// System.out.println("Results " + numResults);
+			LOGGER.trace("Results {}", numResults);
 			rs.results = new Result[numResults];
 			int pos = p2.data;
 			for (int i = 0; i < numResults; i++) {
@@ -100,14 +105,14 @@ public abstract class S7Connection {
 					final int type = Nodave.USByte(p2.mem, pos + 1);
 					int len = Nodave.USBEWord(p2.mem, pos + 2);
 					r.error = 0;
-					// System.out.println("Raw length " + len);
+					LOGGER.trace("Raw length {}", len);
 					if (type == 4) {
 						len /= 8;
 					} else if (type == 3) {
 						; // length is ok
 					}
 
-					// System.out.println("Byte length " + len);
+					LOGGER.trace("Byte length {}", len);
 					// r.data = new byte[len];
 
 					// System.arraycopy(p2.mem, pos + 4, r.data, 0, len);
@@ -118,7 +123,7 @@ public abstract class S7Connection {
 						pos++;
 					}
 				} else {
-					System.out.println("Error " + r.error);
+					LOGGER.error("Error {}", r.error);
 				}
 				pos += 4;
 				rs.results[i] = r;
@@ -173,7 +178,7 @@ public abstract class S7Connection {
 	 * get an unsigned 32bit value from the specified position in result bytes
 	 */
 	public long getDWORD(final int pos) {
-		// System.out.println("getDWORD pos " + pos);
+		LOGGER.trace("getDWORD pos {}", pos);
 		return Nodave.USBELong(this.msgIn, this.udata + pos);
 	}
 
@@ -186,14 +191,13 @@ public abstract class S7Connection {
 	}
 
 	/*
-	 * The following methods are here to give Siemens users their usual data
-	 * types:
+	 * The following methods are here to give Siemens users their usual data types:
 	 */
 	/**
 	 * get a float value from the specified position in result bytes
 	 */
 	public float getFloat(final int pos) {
-		// System.out.println("getFloat pos " + pos);
+		LOGGER.trace("getFloat pos ", pos);
 		return Nodave.BEFloat(this.msgIn, this.udata + pos);
 	}
 
@@ -291,7 +295,7 @@ public abstract class S7Connection {
 		try {
 			this.semaphore.acquire();
 		} catch (final InterruptedException e) {
-			e.printStackTrace();
+			LOGGER.error("Interrupted {}", e);
 		}
 		final PDU p1 = new PDU(this.msgOut, this.PDUstartOut);
 		p1.initReadRequest();
@@ -340,7 +344,7 @@ public abstract class S7Connection {
 	}
 
 	public int useResult(final ResultSet rs, final int number) {
-		System.out.println("rs.getNumResults: " + rs.getNumResults() + " number: " + number);
+		LOGGER.debug("rs.getNumResults: {}  number: {}", rs.getNumResults(), number);
 		if (rs.getNumResults() > number) {
 			this.dataPointer = rs.results[number].bufferStart;
 			return 0;

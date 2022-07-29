@@ -23,7 +23,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class PLCinterface {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PLCinterface.class);
 	InputStream in;
 	int localMPI; // the adapter's MPI address
 	String name;
@@ -57,7 +61,7 @@ public final class PLCinterface {
 					}
 					retry++;
 				} catch (final InterruptedException e) {
-					e.printStackTrace();
+					LOGGER.error("Interrupted ", e);
 				}
 			}
 			res = 0;
@@ -68,7 +72,7 @@ public final class PLCinterface {
 			}
 			return res;
 		} catch (final IOException e) {
-			e.printStackTrace();
+			LOGGER.error("Interrupted ", e);
 			return 0;
 		}
 	}
@@ -77,7 +81,7 @@ public final class PLCinterface {
 		try {
 			this.out.write(b, start, len);
 		} catch (final IOException e) {
-			System.err.println("Interface.write: " + e);
+			LOGGER.error("Interface.write: ", e);
 		}
 	}
 

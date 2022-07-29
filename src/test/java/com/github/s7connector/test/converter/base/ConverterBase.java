@@ -15,19 +15,30 @@ limitations under the License.
 */
 package com.github.s7connector.test.converter.base;
 
-public abstract class ConverterBase
-{
-	
-	protected static void dump(byte[] b)
-	{
-		for (int i=0; i<b.length; i++)
-			System.out.print( Integer.toHexString(b[i] & 0xFF) + ",");
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public abstract class ConverterBase {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConverterBase.class);
+
+	protected static void dump(byte[] b) {
+		if (LOGGER.isDebugEnabled()) {
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = 0; i < b.length; i++) {
+				stringBuilder.append(Integer.toHexString(b[i] & 0xFF) + ",");
+			}
+			LOGGER.debug(stringBuilder.toString());
+		}
 	}
 
-	protected static void dump(Byte[] b)
-	{
-		for (int i=0; i<b.length; i++)
-			System.out.print( Integer.toHexString(b[i] & 0xFF) + ",");
+	protected static void dump(Byte[] b) {
+		if (LOGGER.isDebugEnabled()) {
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = 0; i < b.length; i++) {
+				stringBuilder.append(Integer.toHexString(b[i] & 0xFF) + ",");
+			}
+			LOGGER.debug(stringBuilder.toString());
+		}
 	}
 
 }

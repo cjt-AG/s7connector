@@ -17,6 +17,9 @@ package com.github.s7connector.test.live;
 
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.s7connector.api.S7Connector;
 import com.github.s7connector.api.S7Serializer;
 import com.github.s7connector.api.annotation.S7Variable;
@@ -26,6 +29,7 @@ import com.github.s7connector.api.S7Type;
 
 public class RealPLCTest
 {
+	private static final Logger LOGGER = LoggerFactory.getLogger(RealPLCTest.class);
 
 	/**
 	 * @param args
@@ -115,16 +119,16 @@ public class RealPLCTest
 		db.by1 = 0x5A;
 		
 		Date d = new Date();
-		System.out.println(d);
-		System.out.println(d.getTime());
+		LOGGER.trace("{}",d);
+		LOGGER.trace("{}",d.getTime());
+		
 		
 		db.date1 = d;
 		db.date2 = d;
 		db.millis = 3600000;
 		
 		s.store(db, 100, 0);
-
-		System.out.println("OK");
+		LOGGER.debug("OK");
 		
 		c.close();
 	}

@@ -21,18 +21,19 @@ import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.s7connector.impl.serializer.converter.DateAndTimeConverter;
 
-public class DateAndTimeConverterTest
-{
-	//18, 1,16,16, 5,80,0,3, (dec)
-	//12, 1,10,10, 5,50,0,3, (hex)
-	//12-01-10 10:05:50.000
+public class DateAndTimeConverterTest {
+	// 18, 1,16,16, 5,80,0,3, (dec)
+	// 12, 1,10,10, 5,50,0,3, (hex)
+	// 12-01-10 10:05:50.000
+	private static final Logger LOGGER = LoggerFactory.getLogger(DateAndTimeConverterTest.class);
 
 	@Test
-	public void putTest()
-	{
+	public void putTest() {
 		DateAndTimeConverter c = new DateAndTimeConverter();
 		byte[] buffer = new byte[8];
 		c.putToPLC(buffer, 0, (byte) 0x10);
@@ -40,8 +41,7 @@ public class DateAndTimeConverterTest
 	}
 
 	@Test
-	public void getTest()
-	{
+	public void getTest() {
 		DateAndTimeConverter c = new DateAndTimeConverter();
 		byte[] buffer = new byte[8];
 		buffer[0] = 0x16;
@@ -50,16 +50,13 @@ public class DateAndTimeConverterTest
 	}
 
 	@Test
-	public void putGetTest()
-	{
-		for (int i=0; i<100; i++)
-		{
-			putGetLoop( (byte)i );
+	public void putGetTest() {
+		for (int i = 0; i < 100; i++) {
+			putGetLoop((byte) i);
 		}
 	}
 
-	private void putGetLoop(byte b)
-	{
+	private void putGetLoop(byte b) {
 		DateAndTimeConverter c = new DateAndTimeConverter();
 		byte[] buffer = new byte[8];
 
@@ -71,17 +68,15 @@ public class DateAndTimeConverterTest
 	}
 
 	@Test
-	public void loop()
-	{
+	public void loop() {
 		DateAndTimeConverter c = new DateAndTimeConverter();
 		byte[] buffer = new byte[8];
 
 		Random random = new Random();
-		
-		for (int i=0; i<50; i++)
-		{
+
+		for (int i = 0; i < 50; i++) {
 			Calendar calendar = Calendar.getInstance();
-			
+
 			calendar.set(Calendar.YEAR, random.nextInt(50) + 1991);
 			calendar.set(Calendar.MONTH, random.nextInt(12));
 			calendar.set(Calendar.DAY_OF_MONTH, random.nextInt(30) + 1);
@@ -90,13 +85,12 @@ public class DateAndTimeConverterTest
 			calendar.set(Calendar.SECOND, random.nextInt(60));
 			calendar.set(Calendar.MILLISECOND, 0);
 			Date d = calendar.getTime();
-			
+
 			c.insert(d, buffer, 0, 0, 8);
 
 			Date dout = c.extract(Date.class, buffer, 0, 0);
-
-			System.out.println("expected: " + d.getTime());
-			System.out.println("actual:   " + dout.getTime());
+			LOGGER.debug("expected: {}", d.getTime());
+			LOGGER.debug("actual: {}", dout.getTime());
 
 			Assert.assertEquals(d, dout);
 			Assert.assertEquals(d.getTime(), dout.getTime());
@@ -104,8 +98,7 @@ public class DateAndTimeConverterTest
 	}
 
 	@Test
-	public void extract1()
-	{
+	public void extract1() {
 		DateAndTimeConverter c = new DateAndTimeConverter();
 		byte[] buffer = new byte[8];
 

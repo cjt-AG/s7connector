@@ -20,7 +20,11 @@
 
 package com.github.s7connector.impl.nodave;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public final class Nodave {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Nodave.class);
 	public final static int MAX_RAW_LEN = 2048;
 	public final static int MPIReachable = 0x30;
 	public final static int MPIunused = 0x10;
@@ -73,7 +77,7 @@ public final class Nodave {
 
 	public static float BEFloat(final byte[] b, final int pos) {
 		int i = 0;
-		// System.out.println("pos" + pos);
+		LOGGER.trace("pos {}", pos);
 
 		i |= Nodave.USByte(b, pos);
 		i <<= 8;
@@ -135,19 +139,22 @@ public final class Nodave {
 	 *
 	 */
 	public static void dump(final String text, final byte[] mem, final int start, final int len) {
-		System.out.print(text + " ");
-		for (int i = start; i < (start + len); i++) {
-			int j = mem[i];
-			if (j < 0) {
-				j += 256;
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug(text);
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = start; i < (start + len); i++) {
+				int j = mem[i];
+				if (j < 0) {
+					j += 256;
+				}
+				String s = Integer.toHexString(j);
+				if (s.length() < 2) {
+					s = "0" + s;
+				}
+				stringBuilder.append(s);
 			}
-			String s = Integer.toHexString(j);
-			if (s.length() < 2) {
-				s = "0" + s;
-			}
-			System.out.print(s + ",");
+			LOGGER.debug(stringBuilder.toString());
 		}
-		System.out.println(" ");
 	}
 
 	public static long SBELong(final byte[] b, final int pos) {
@@ -315,8 +322,8 @@ public final class Nodave {
 		int j = b[pos + 1];
 		int k = b[pos + 2];
 		int l = b[pos + 3];
-		// System.out.println(
-		// pos + " 0:" + i + " 1:" + j + " 2:" + k + " 3:" + l);
+
+		LOGGER.trace("{} 0: {} 1: {} 2: {} 3: {}", pos, i, j, k, l);
 		if (i < 0) {
 			i += 256;
 		}
