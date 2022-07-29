@@ -15,41 +15,41 @@ limitations under the License.
 */
 package com.github.s7connector.test;
 
-import com.github.s7connector.api.DaveArea;
-import com.github.s7connector.api.S7Connector;
-import com.github.s7connector.api.factory.S7ConnectorFactory;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class ConnectionDropTest {
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.github.s7connector.api.DaveArea;
+import com.github.s7connector.api.S7Connector;
+import com.github.s7connector.api.factory.S7ConnectorFactory;
+
+public class ConnectionDropTest {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionDropTest.class);
 
 	@Test
 	public void test() throws Exception {
 
-		final int port = (int)(Math.random() * 10000) + 10000;
+		final int port = (int) (Math.random() * 10000) + 10000;
 		final ServerSocket serverSocket = new ServerSocket(port);
 		new Thread(() -> {
 			try {
 				Socket socket = serverSocket.accept();
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.error("Interrupted {}", e);
 			}
 		});
 
-		S7Connector connector = S7ConnectorFactory.buildTCPConnector()
-				.withHost("127.0.0.1")
-				.withPort(port)
-				.build();
+		S7Connector connector = S7ConnectorFactory.buildTCPConnector().withHost("127.0.0.1").withPort(port).build();
 
 		serverSocket.close();
 
 		try {
 			connector.read(DaveArea.DB, 1, 1, 0);
-		} catch(IllegalArgumentException e){
+		} catch (IllegalArgumentException e) {
 			return;
 		}
 

@@ -18,30 +18,29 @@ package com.github.s7connector.test;
 import java.util.Calendar;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class DateTest
-{
-	
+public class DateTest {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DateTest.class);
+
 	@Test
-	public void test()
-	{
+	public void test() {
 		Calendar c = Calendar.getInstance();
 		c.clear();
 		c.add(Calendar.YEAR, 20);
 		c.add(Calendar.DAY_OF_YEAR, 36865);
-		
-		System.out.println( c.getTime() );
-		
+		LOGGER.debug("{}",c.getTime());
+
 	}
-	
+
 	@Test
-	public void test2()
-	{
+	public void test2() {
 		Calendar c = Calendar.getInstance();
 		c.clear();
 		c.set(Calendar.YEAR, 1990);
-		System.out.println( c.getTime() );
-			
+		LOGGER.debug("{}",c.getTime());
+
 	}
 
 }
