@@ -61,7 +61,7 @@ public final class PLCinterface {
 					}
 					retry++;
 				} catch (final InterruptedException e) {
-					LOGGER.error("Interrupted", e);
+					LOGGER.trace("Interrupted", e);
 				}
 			}
 			res = 0;
@@ -81,7 +81,7 @@ public final class PLCinterface {
 		try {
 			this.out.write(b, start, len);
 		} catch (final IOException e) {
-			LOGGER.error("Interface.write", e);
+			LOGGER.debug("Interface.write", e);
 		}
 	}
 
